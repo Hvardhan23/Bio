@@ -1,0 +1,56 @@
+close all;
+clear all;
+clc;
+load("rec_1m.mat");
+x=val(1,:);
+fs=500;
+N=length(x);
+tx=([0:N-1]/fs);
+subplot(4,2,1);
+plot(tx,x);
+title("Original ECG Signal");
+
+%low pass
+b=[1 0 0 0 0 0 -2 0 0 0 0 0 1];
+a=[1 -2 1];
+a_lp=filter(b,a,[1 zeros(1,12)]);
+x1=conv(x,a_lp);
+x1=x1/max(abs(x1));
+subplot(4,2,2);
+plot(x1);
+title("Low Pass");
+
+%high pass
+b=[-1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 32 -32 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1];
+a=[-1,1];
+a_hp=filter(b,a,[1 zeros(1,32)]);
+x2=conv(x1,a_hp);
+x2=x2/max(abs(x2));
+subplot(4,2,3);
+plot(x2);
+title("High Pass");
+
+%derivative
+h=[-2 -1 0 2 1];
+x3=conv(x2,h);
+x3=x3/max(abs(x3));
+subplot(4,2,4);
+plot(x3);
+title("Derivative");
+
+%squaring
+
+x4= x3.^2;
+x4=x4/max(abs(x4));
+subplot(4,2,5);
+plot(x4);
+title("Squaring");
+
+%moving window integration
+h=ones(1,31)/31;
+Delay=15;
+x5=conv(x4,h);
+x5=x5/max(abs(x5));
+subplot(4,2,6);
+plot(x5);
+title("QRS Complex");
