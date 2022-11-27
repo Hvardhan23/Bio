@@ -1,0 +1,39 @@
+close all;
+clear all;
+clc;
+load("C:\Users\Avinash\OneDrive\Desktop\rec_1m");
+ecg=val(1,:);
+fs=500;
+t=1/fs;
+N=length(ecg);
+tx=[0:N-1]/fs;
+
+subplot(6,1,1);
+plot(tx,ecg);
+title("Original ECG signal");
+subplot(6,1,2);
+plot(tx,ecg);
+title("Zoomed into 1-2 seconds");
+xlim([1,2]);
+
+[p,f]=pwelch(ecg,hamming(fs),.5*fs,2*fs,fs);
+subplot(6,1,3);
+plot(f,10*log10(p));
+title(" welch method ");
+
+subplot(6,1,4);
+plot(f,10*log10(p));
+title(" Zoomed into 0-60hz ");
+xlim([0,60]);
+
+[pxx,f]=periodogram(ecg,hamming(N),N,fs,'power');
+[pwrest,idx]=max(pxx);
+fprintf("The maximum power occurs at %f\n",f(idx));
+subplot(6,1,5);
+plot(f,10*log10(pxx));
+title(" periodogram method");
+
+subplot(6,1,6);
+plot(f,10*log10(pxx));
+title("Zoomed into 0-60hz");
+xlim([0,60]);
