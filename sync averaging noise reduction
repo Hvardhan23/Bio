@@ -1,0 +1,22 @@
+close all;
+clear all;
+clc;
+load("rec_1m.mat");
+x=val(1,:);
+subplot(2,2,1);
+plot(x);
+
+%compress
+n=3;
+w='db3';
+[c,l]=wavedec(x,n,w);
+
+th=30;
+keepapp=1;
+[xd,cxd,lxd,pref0,pref1]=wdencmp("gbl",c,l,w,n,th,'h',keepapp);
+
+subplot(2,2,2);
+plot(xd);
+
+subplot(2,2,3);
+plot(cxd);
