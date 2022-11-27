@@ -1,0 +1,55 @@
+close all;
+clear all;
+clc;
+load("rec_1m.mat");
+ecg=val(1,:);
+fs=500;
+f=50;
+t=1/fs;
+N=length(ecg);
+tx=[0:N-1]/fs;
+subplot(4,2,1);
+plot(tx,ecg);
+title("Original ECG Signal");
+
+y=fft(ecg);
+x=abs(y);
+
+subplot(4,2,2);
+plot(x);
+title("Spectrum of Original ECG");
+
+%generating NOise
+
+noise=10*sin(2*pi*f*tx);
+subplot(4,2,3);
+plot(tx,noise);
+title("Noise");
+
+y=fft(noise);
+x=abs(y);
+subplot(4,2,4);
+plot(x);
+title("Spectrum of Noise");
+
+%mixing 
+
+mixed_signal= ecg + noise;
+subplot(4,2,5);
+plot(tx,mixed_signal);
+title("Corrupted Signal");
+
+y= fft(mixed_signal);
+x=abs(y);
+subplot(4,2,6);
+plot(x);
+title("Spectrum of Noise");
+
+%filtering of signal
+w=f/(fs/2);
+bw=w;
+[num,den]=iirnotch(w,bw);
+ecg_filtered=filter(num,den,mixed_signal);
+subplot(4,2,7);
+plot(tx,ecg_filtered);
+title("Filtered Signal");
